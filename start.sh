@@ -4,3 +4,4 @@ cd /TXT-EXTRACTOR
 pip install -r requirements.txt
 echo "Starting Bot..."
 python -m Extractor
+
