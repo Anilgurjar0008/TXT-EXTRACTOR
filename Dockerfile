@@ -1,23 +1,32 @@
-
-# Python Based Docker
+# Python आधारित lightweight image
 FROM python:3.11-slim
 
-# Installing Packages
-RUN apt update && apt upgrade -y
-RUN apt install git curl python3-pip ffmpeg aria2 -y
+# System packages इंस्टॉल करें (git, ffmpeg आदि)
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+        git \
+        curl \
+        ffmpeg \
+        aria2 && \
+    rm -rf /var/lib/apt/lists/*  # Cache साफ़ करें
 
-# Updating Pip Packages
-RUN pip3 install -U pip
+# Pip को अपडेट करें
+RUN pip3 install --no-cache-dir -U pip
 
-# Copying Requirements
+# Requirements फ़ाइल कॉपी करें
 COPY requirements.txt /requirements.txt
 
-# Installing Requirements
-RUN cd /
-RUN pip3 install -U -r requirements.txt
-RUN mkdir /EXTRACTOR
-WORKDIR / EXTRACTOR
-COPY start.sh /start.sh
+# Python dependencies इंस्टॉल करें
+RUN pip3 install --no-cache-dir -U -r requirements.txt
 
-# Running MessageSearchBot
-CMD ["/bin/bash", "-c", "/start.sh"]
+# App का फोल्डर बनाएँ
+RUN mkdir -p /EXTRACTOR
+WORKDIR /EXTRACTOR
+
+# Start script कॉपी करें और executable बनाएँ
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Container start होने पर script चलाएँ
+CMD ["/start.sh"]
